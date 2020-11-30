@@ -1,0 +1,97 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+## Faszinierend funkelnd funktional -funzen muss es halt!
+
+Lesen Sie das ["Functions"](http://adv-r.had.co.nz/Functions.html)-Kapitel aus dem *Advanced R Programming*-Buch von Hadley Wickham aufmerksam durch.
+
+Bearbeiten Sie die folgenden von dort übernommenen Aufgaben:
+
+a)  Schreiben Sie die folgenden verwirrenden Funktionsaufrufe so um dass sie möglichst klar & einfach zu verstehen sind:
+
+```{r, 1a, eval=FALSE}
+set.seed(20141012)
+x <- sample(c(1:10, NA), size = 20, replace = TRUE)
+y <- runif(20, min = 0, max = 1)
+cor(x, y, use = "pairwise.complete.obs", method = "kendall")
+```
+
+b)  Was gibt diese Funktion zurück? Warum? Welches Prinzip illustriert sie?
+
+```{r, 1b, eval=FALSE}
+f1 <- function(x = {
+    y <- 1
+    2
+  }, y = 0) {
+  x + y
+}
+
+# Die Funktion gibt einen Vektor mit dem Wert 3 zurueck. Dies ist auf die
+# Namensmaskierung zurueckzufuehren. 
+# Wenn innerhalb von "x + y" auf x zugegriffen wird, wird x = {y <- 1; 2} in der
+# Umgebung von f1 () ausgewertet. y wird mit dem Wert 1 definiert und der
+# Rueckgabewert von {() (2) wird x zugewiesen.
+# Wenn y innerhalb von "x + y" als naechstes aufgerufen wird, hat es bereits den
+# Wert 1 und R brauch nicht weiter zu suchen (Lazy evaluation). Daher wird der
+# Teil "y = 0" nicht bewertet und somit bleibt y mit dem vorher definierten Wert
+# in der Umgebung von f1() unberuehrt.
+```
+
+*Hinweis:* Was passiert wenn Sie die letzte Zeile mit `y + x` ersetzen? Mit `c(y, x, y)`?
+
+c)  Was gibt diese Funktion zurück? Warum? Welches Prinzip illustriert sie?
+
+```{r, 1c, eval=FALSE}
+f2 <- function(x = z) {
+  z <- 100
+  x
+}
+
+# Die Funktion gibt einen Vektor mit dem Wert 100 zurueck. Das Standardargument
+# (x = z) wird in der Funktionsumgebung ausgewertet, wenn auf x zugegriffen wird.
+# Da z bereits definiert worden und x = z als Agument gegeben ist, braucht R
+# nicht mehr weiter zu suchen ("Lazy evaluation") und somit erhaelt man 100 als
+# Output.
+```
+
+d)  Schreiben sie eine *infix*-Funktion `%xor%` für `logical`-inputs die eine XOR-Operation (entweder-oder-aber-nicht-beides) durchführt. Überprüfen Sie ihre Funktion mit den folgenden Tests:
+
+```{r, code = readLines("test-functions-xor.R"), eval=FALSE}
+`%xor%` <- function(x = c(FALSE, TRUE), y = c(TRUE, FALSE)) {
+ xor(x, y)
+}
+
+# Bespiele:
+FALSE %xor% FALSE
+TRUE %xor% FALSE
+```
+
+e)  Wie kann jeweils der Zustand von `options()` und `par()` abgespeichert und wiederhergestellt werden?
+-> ANTWORT: Mit der Funktion on.exit(), also on.exit(options()) und on.exit(par()).
+
+
+f)  Schreiben Sie eine Funktion die ein neues PDF-Grafikdevice öffnet, `plot` mit den übergebenen Argumenten aufruft und dann das zuvor geöffnete Grafikfenster wieder schließt, egal ob die übergebenen Argumente für `plot` funktioniert haben oder nicht.
+```{r, 1f, eval=FALSE}
+plot_graphic <- function(...) {
+  pdf("some.pdf") 
+  plot(...)
+  on.exit(pdf("some.pdf"))
+}
+
+# Ich weiß nicht, ob ich richtig gemacht bzw. verstanden habe! :(
+```
+
+
+g)  Was gibt der folgende Code zurück? Warum? Was bedeuten die drei verschiedenen `c`s in der zweiten Zeile?
+
+```{r, 1g, eval=FALSE}
+c <- 10
+c(c = c)
+
+# Dieser Code gibt einen benannten numerischen Vektor der Laenge eins zurück, mit
+# einem Element von Wert 10 und Namen "c".
+# Das erste c repraesentiert die Funktion c(), das zweite c wird als Name und das
+# dritte c als Wert interpretiert.
+```
